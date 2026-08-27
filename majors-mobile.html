@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>참여학과 모바일 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --deep:#441067; --purple:#742cb6; --pink:#f14f9a;
+  --ground:#f7f3fb; --card:#ffffff; --ink:#211a27; --muted:#6f6579;
+  --line:#e5dceb; --chip:#f4ecfb; --chipink:#4a2a68;
+  --tabbg:#ede3f6; --onpurple:#ffffff; --shadow:0 1px 0 rgba(68,16,103,.06), 0 10px 24px -18px rgba(68,16,103,.5);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --deep:#c9a4e8; --purple:#a877dd; --pink:#ff7fb8;
+    --ground:#17101d; --card:#211829; --ink:#f2ecf7; --muted:#a99cb5;
+    --line:#33253f; --chip:#2c2038; --chipink:#e6d9f2;
+    --tabbg:#241a2f; --onpurple:#1a1022; --shadow:0 1px 0 rgba(0,0,0,.3), 0 12px 26px -18px #000;
+  }
+}
+:root[data-theme="dark"]{
+  --deep:#c9a4e8; --purple:#a877dd; --pink:#ff7fb8;
+  --ground:#17101d; --card:#211829; --ink:#f2ecf7; --muted:#a99cb5;
+  --line:#33253f; --chip:#2c2038; --chipink:#e6d9f2;
+  --tabbg:#241a2f; --onpurple:#1a1022; --shadow:0 1px 0 rgba(0,0,0,.3), 0 12px 26px -18px #000;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"Noto Sans KR",-apple-system,BlinkMacSystemFont,"Malgun Gothic",Arial,sans-serif;
+  word-break:keep-all; overflow-wrap:anywhere; -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:1120px; margin:0 auto; padding:40px 20px 72px; display:flex; flex-direction:column; gap:36px}
+
+/* ── 섹션 헤더 ── */
+.head{display:flex; flex-direction:column; gap:12px; align-items:flex-start}
+.pill{
+  display:inline-block; background:var(--purple); color:var(--onpurple); font-weight:900;
+  font-size:15px; letter-spacing:-.02em; padding:9px 22px; border-radius:999px;
+}
+.head h1{margin:0; font-size:clamp(24px,6vw,34px); line-height:1.3; letter-spacing:-.045em; color:var(--deep); text-wrap:balance}
+.head p{margin:0; color:var(--muted); font-size:15px; line-height:1.75; max-width:60ch}
+
+/* ── 날짜 선택 (CSS만, JS 없음) ── */
+.days input{position:absolute; opacity:0; pointer-events:none}
+.tabs{
+  position:sticky; top:0; z-index:5; display:grid; grid-template-columns:1fr 1fr; gap:6px;
+  background:var(--tabbg); padding:6px; border-radius:14px; margin-bottom:20px;
+}
+.tabs label{
+  display:flex; align-items:center; justify-content:center; gap:8px; min-height:48px;
+  border-radius:10px; font-weight:700; font-size:15px; color:var(--deep);
+  cursor:pointer; transition:background .18s ease, color .18s ease;
+}
+.tabs label small{display:block; font-weight:500; font-size:12px; opacity:.75}
+#d1:checked ~ .tabs label[for="d1"], #d2:checked ~ .tabs label[for="d2"]{background:var(--purple); color:var(--onpurple)}
+#d1:focus-visible ~ .tabs label[for="d1"], #d2:focus-visible ~ .tabs label[for="d2"]{outline:3px solid var(--pink); outline-offset:2px}
+.panel{display:none}
+#d1:checked ~ .panels .p1, #d2:checked ~ .panels .p2{display:flex; flex-direction:column; gap:12px}
+
+/* ── 단과대학 카드 ── */
+details.college{
+  background:var(--card); border:1px solid var(--line); border-radius:16px;
+  box-shadow:var(--shadow); overflow:hidden;
+}
+details.college > summary{
+  list-style:none; cursor:pointer; display:flex; align-items:center; gap:12px;
+  padding:16px 18px; min-height:56px; font-weight:900; font-size:17px; color:var(--deep);
+}
+details.college > summary::-webkit-details-marker{display:none}
+details.college > summary:focus-visible{outline:3px solid var(--pink); outline-offset:-3px}
+.count{
+  margin-left:auto; display:inline-flex; align-items:center; font-size:12px; font-weight:700;
+  color:var(--muted); letter-spacing:.02em; white-space:nowrap;
+}
+.chev{width:11px; height:11px; border-right:2.5px solid var(--purple); border-bottom:2.5px solid var(--purple);
+  transform:rotate(45deg); transition:transform .2s ease; flex:none; margin-left:2px}
+details[open] > summary .chev{transform:rotate(-135deg)}
+@media (prefers-reduced-motion:reduce){.chev,.tabs label{transition:none}}
+.majors{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)); gap:8px;
+  padding:0 18px 18px;
+}
+.majors span{
+  display:flex; align-items:center; min-height:44px; padding:10px 14px;
+  background:var(--chip); color:var(--chipink); border-radius:10px;
+  font-size:15px; font-weight:500; line-height:1.4;
+}
+.majors span.tbd{background:transparent; border:1px dashed var(--line); color:var(--muted); font-size:13px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.9em; background:var(--chip); color:var(--chipink); padding:2px 6px; border-radius:5px}
+.note{margin:0; color:var(--muted); font-size:13px; line-height:1.7}
+
+/* ── 데스크톱: 두 날짜를 나란히, 표에 가까운 밀도 ── */
+@media (min-width:900px){
+  .days input{display:none}
+  .tabs{display:none}
+  .panel{display:flex !important; flex-direction:column; gap:12px}
+  .panels{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start}
+  .panel::before{
+    content:attr(data-day); display:block; font-weight:900; font-size:18px; color:var(--deep);
+    padding-bottom:10px; border-bottom:2px solid var(--purple); margin-bottom:4px;
+  }
+  details.college{border-radius:14px}
+  details.college > summary{font-size:16px}
+  .majors{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+}
+
+/* ── 설명 블록 ── */
+.why{border-top:1px solid var(--line); padding-top:28px; display:flex; flex-direction:column; gap:18px}
+.why h2{margin:0; font-size:19px; letter-spacing:-.03em; color:var(--deep)}
+.why ol{margin:0; padding-left:1.1em; display:flex; flex-direction:column; gap:12px; color:var(--muted); font-size:15px; line-height:1.75}
+.why b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <span class="pill">참여학과(부)</span>
+    <h1>날짜를 고르면<br>그 날의 학과만 보여요.</h1>
+    <p>가로로 긴 표 대신 단과대학 단위로 접히는 목록입니다. 가로 스크롤 없이 한 화면 폭 안에서 읽히고, 필요한 단과대학만 펼쳐서 볼 수 있어요.</p>
+  </div>
+
+  <div class="days">
+    <input type="radio" name="day" id="d1" checked>
+    <input type="radio" name="day" id="d2">
+    <div class="tabs">
+      <label for="d1">2026. 9. 3.<small>목요일</small></label>
+      <label for="d2">2026. 9. 4.<small>금요일</small></label>
+    </div>
+
+    <div class="panels">
+      <div class="panel p1" data-day="2026. 9. 3.(목)">
+        <details class="college" open>
+          <summary>사회과학대학 <span class="count">10개 학과</span><span class="chev"></span></summary>
+          <div class="majors">
+            <span>정치외교학과</span><span>심리학과</span><span>지리학과</span>
+            <span>경제학과</span><span>미디어커뮤니케이션학과</span>
+            <span>사회복지학과</span><span>법학부</span>
+            <span class="tbd">외 3개 학과 · 명단 반영 예정</span>
+          </div>
+        </details>
+        <details class="college">
+          <summary>공과대학 <span class="count">8개 학과</span><span class="chev"></span></summary>
+          <div class="majors">
+            <span>융합보안공학과</span><span>서비스·디자인공학과</span>
+            <span>AI융합학부</span><span>컴퓨터공학과</span>
+            <span class="tbd">외 4개 학과 · 명단 반영 예정</span>
+          </div>
+        </details>
+        <details class="college">
+          <summary>자연과학대학 <span class="count">7개 학과</span><span class="chev"></span></summary>
+          <div class="majors">
+            <span>수리통계데이터사이언스학부</span><span>바이오신약의과학부</span>
+            <span>화학·에너지융합학부</span>
+            <span class="tbd">외 4개 학과 · 명단 반영 예정</span>
+          </div>
+        </details>
+      </div>
+
+      <div class="panel p2" data-day="2026. 9. 4.(금)">
+        <details class="college" open>
+          <summary>인문융합예술대학 <span class="count">9개 학과</span><span class="chev"></span></summary>
+          <div class="majors">
+            <span>국어국문학과</span><span>영어영문학과</span>
+            <span>독일어문·문화학과</span><span>프랑스어문·문화학과</span>
+            <span>일본어문·문화학과</span><span>중국어문·문화학과</span>
+            <span>사학과</span><span>문화예술경영학과</span>
+            <span>미디어영상연기학과</span>
+          </div>
+        </details>
+        <details class="college">
+          <summary>예술대학 <span class="count">8개 학과</span><span class="chev"></span></summary>
+          <div class="majors">
+            <span>동양화과</span><span>서양화과</span><span>조소과</span>
+            <span>성악과</span><span>기악과</span><span>작곡과</span>
+            <span class="tbd">외 2개 학과 · 명단 반영 예정</span>
+          </div>
+        </details>
+        <details class="college">
+          <summary>융합문화예술대학 <span class="count">8개 학과</span><span class="chev"></span></summary>
+          <div class="majors">
+            <span>무용예술학과</span><span>뷰티산업학과</span>
+            <span>의류산업학과</span><span>유아교육과</span>
+            <span class="tbd">외 4개 학과 · 명단 반영 예정</span>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <p class="note">※ 위 학과 배치는 레이아웃 확인용 예시입니다. 최종 참여학과 명단으로 교체해 주세요.</p>
+
+  <div class="why">
+    <h2>지금 표가 모바일에서 잘리는 이유</h2>
+    <ol>
+      <li><b>두 날짜 표를 가로로 나란히</b> 두면 필요한 폭이 화면의 2배가 됩니다. 세로로 쌓거나, 위처럼 날짜 탭으로 하나씩 보여주면 폭 문제가 사라져요.</li>
+      <li><b>표 자체가 고정 폭</b>이라 화면이 좁아져도 줄지 않습니다. 표를 유지해야 한다면 <b>모바일에서는 표를 카드 목록으로 전환</b>하는 게 가장 확실합니다. 셀 안 한글은 <code>word-break:keep-all</code>로 단어 단위 줄바꿈을 시키세요.</li>
+      <li><b>표를 이미지로 넣은 경우</b>가 특히 위험합니다. 확대해야 읽히고 검색·복사도 안 됩니다. 이미지 대신 텍스트 마크업으로 바꾸는 것이 시인성·접근성 모두에 유리합니다.</li>
+      <li>가로 스크롤을 끝내 남겨야 한다면 최소한 <b>첫 열 고정(<code>position:sticky</code>)</b>과 스크롤 힌트를 넣어 지금 어느 학과 행을 보는지 잃지 않게 하세요.</li>
+    </ol>
+  </div>
+</div>
+</body>
+</html>
