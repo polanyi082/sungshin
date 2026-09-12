@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2026 U10산업특강 참여 현황 대시보드</title>
+<style>
+:root{
+  color-scheme:light;
+  --surface-1:#fcfcfb; --surface-2:#ffffff; --page:#f9f9f7;
+  --ink-1:#0b0b0b; --ink-2:#52514e; --ink-muted:#898781;
+  --grid:#e1e0d9; --border:rgba(11,11,11,0.10);
+  --brand:#441067; --brand-2:#742cb6;
+  --stage-1:#6da7ec; --stage-2:#2a78d6; --stage-3:#184f95;
+  --good:#0ca30c; --chip:#f4ecfb;
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --surface-1:#1a1a19; --surface-2:#222220; --page:#0d0d0d;
+    --ink-1:#ffffff; --ink-2:#c3c2b7; --ink-muted:#898781;
+    --grid:#2c2c2a; --border:rgba(255,255,255,0.10);
+    --brand:#c79bde; --brand-2:#9085e9;
+    --stage-1:#5598e7; --stage-2:#2a78d6; --stage-3:#1c5cab;
+    --good:#0ca30c; --chip:#2a2033;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --surface-1:#1a1a19; --surface-2:#222220; --page:#0d0d0d;
+  --ink-1:#ffffff; --ink-2:#c3c2b7; --ink-muted:#898781;
+  --grid:#2c2c2a; --border:rgba(255,255,255,0.10);
+  --brand:#c79bde; --brand-2:#9085e9;
+  --stage-1:#5598e7; --stage-2:#2a78d6; --stage-3:#1c5cab;
+  --good:#0ca30c; --chip:#2a2033;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink-1);font-family:system-ui,-apple-system,"Segoe UI","Noto Sans KR",sans-serif;padding:0 16px}
+.wrap{max-width:1080px;margin:0 auto;padding:36px 0 60px}
+header{margin-bottom:28px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--brand-2);margin:0 0 8px}
+h1{font-size:clamp(24px,3.2vw,32px);margin:0 0 10px;letter-spacing:-.02em;color:var(--brand)}
+.sub{color:var(--ink-2);line-height:1.7;font-size:14.5px;max-width:760px}
+.note{margin-top:14px;font-size:12.5px;color:var(--ink-muted);background:var(--chip);border-radius:10px;padding:10px 14px;line-height:1.6}
+
+.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:26px 0 30px}
+.tile{background:var(--surface-1);border:1px solid var(--border);border-radius:14px;padding:16px 18px}
+.tile span{display:block;font-size:12px;color:var(--ink-muted);margin-bottom:8px}
+.tile strong{display:block;font-size:26px;font-variant-numeric:tabular-nums;color:var(--ink-1)}
+.tile strong small{font-size:13px;color:var(--ink-2);font-weight:600}
+
+.tabs{display:flex;gap:8px;margin-bottom:18px;border-bottom:1px solid var(--grid)}
+.tabs button{appearance:none;border:none;background:none;padding:10px 4px;margin-right:18px;font-size:15px;font-weight:700;color:var(--ink-muted);cursor:pointer;border-bottom:3px solid transparent}
+.tabs button.active{color:var(--brand);border-bottom-color:var(--brand-2)}
+
+.panel{display:none}
+.panel.active{display:block}
+
+.controls{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.controls label{font-size:13px;color:var(--ink-2);font-weight:700}
+select{font:inherit;font-size:14px;padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface-1);color:var(--ink-1)}
+
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin:2px 0 16px;font-size:12.5px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.swatch{width:10px;height:10px;border-radius:3px;display:inline-block}
+
+.card{background:var(--surface-1);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:18px}
+.card h2{font-size:17px;margin:0 0 4px;color:var(--ink-1)}
+.card .cardsub{font-size:12.5px;color:var(--ink-muted);margin-bottom:16px}
+
+.row{display:grid;grid-template-columns:150px 1fr 190px;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--grid)}
+.row:last-child{border-bottom:none}
+.row .cname{font-size:13.5px;font-weight:700;color:var(--ink-1)}
+.bars{display:flex;flex-direction:column;gap:4px}
+.barline{display:flex;align-items:center;gap:8px;height:12px}
+.track{flex:1;height:8px;border-radius:4px;background:var(--grid);position:relative;overflow:hidden}
+.fill{height:100%;border-radius:4px;min-width:2px}
+.barval{width:34px;text-align:right;font-size:11px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.rowmeta{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.rate{font-weight:800;color:var(--brand)}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--grid);font-variant-numeric:tabular-nums}
+th{color:var(--ink-muted);font-weight:700;font-size:12px}
+td.num,th.num{text-align:right}
+tr.total td{font-weight:800;border-top:2px solid var(--ink-1);border-bottom:none}
+.tablewrap{overflow-x:auto}
+
+footer{margin-top:30px;font-size:12px;color:var(--ink-muted);text-align:center}
+
+@media(max-width:760px){
+  .tiles{grid-template-columns:1fr 1fr}
+  .row{grid-template-columns:1fr;gap:6px}
+  .row .cname{font-size:13px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">U10 산업특강 · 참여 현황</p>
+  <h1>2026년 U10산업특강 참여 현황 대시보드</h1>
+  <p class="sub">참여 10개 대학의 출석시트(신청·참여·수료 데이터)를 기준으로 과정별 신청인원, 프로그램 참여인원, 수료인원을 집계한 현황입니다.</p>
+  <p class="note" id="statusNote">데이터 기준일: 2026-09-12. 프로그램 진행 일정(9/14~10/2) 이전 시점 기준이므로, 아직 진행되지 않은 회차는 참여·수료 인원이 0으로 표시됩니다. 회차 진행 후 출석시트가 갱신되면 이 값도 함께 반영해야 합니다.</p>
+</header>
+
+<section class="tiles" id="overviewTiles"></section>
+
+<div class="tabs">
+  <button class="active" data-tab="byschool">대학별 보기</button>
+  <button data-tab="bycourse">과정별 보기</button>
+</div>
+
+<div class="legend">
+  <span><i class="swatch" style="background:var(--stage-1)"></i>참여신청인원</span>
+  <span><i class="swatch" style="background:var(--stage-2)"></i>프로그램 참여인원</span>
+  <span><i class="swatch" style="background:var(--stage-3)"></i>수료인원</span>
+</div>
+
+<div class="panel active" id="panel-byschool">
+  <div class="controls">
+    <label for="schoolSelect">대학 선택</label>
+    <select id="schoolSelect"></select>
+  </div>
+  <div id="schoolContent"></div>
+</div>
+
+<div class="panel" id="panel-bycourse">
+  <div class="card">
+    <h2>과정별 전체 현황 (10개 대학 합계)</h2>
+    <p class="cardsub">모든 참여 대학을 합산한 과정별 신청·참여·수료 인원입니다.</p>
+    <div id="courseRows"></div>
+  </div>
+</div>
+
+<footer>2026 U10산업특강 · 출석시트 기준 자동 집계 대시보드</footer>
+</div>
+
+<script id="dashboard-data" type="application/json">
+{"asOf": "2026-09-12", "courseOrder": ["경영지원·사무관리", "데이터 분석", "디지털마케팅·콘텐츠기획", "공공행정·행정사무", "스마트제조·시스템관리", "SW·IT 개발", "글로벌 무역·해외영업", "사회복지·통합돌봄", "UX/UI·디자인", "교육·교육기획"], "schoolOrder": ["강남대학교", "한세대학교", "한신대학교", "오산대학교", "협성대학교", "한경국립대학교", "안양대학교", "수원대학교", "성결대학교", "평택대학교", "한국공학대학교"], "schools": [{"school": "강남대학교", "courses": {"경영지원·사무관리": {"신청": 24, "참여": 0, "수료": 0}, "데이터 분석": {"신청": 20, "참여": 0, "수료": 0}, "디지털마케팅·콘텐츠기획": {"신청": 0, "참여": 0, "수료": 0}, "공공행정·행정사무": {"신청": 0, "참여": 0, "수료": 0}, "스마트제조·시스템관리": {"신청": 0, "참여": 0, "수료": 0}, "SW·IT 개발": {"신청": 0, "참여": 0, "수료": 0}, "글로벌 무역·해외영업": {"신청": 0, "참여": 0, "수료": 0}, "사회복지·통합돌봄": {"신청": 0, "참여": 0, "수료": 0}, "UX/UI·디자인": {"신청": 0, "참여": 0, "수료": 0}, "교육·교육기획": {"신청": 0, "참여": 0, "수료": 0}}}, {"school": "한세대학교", "courses": {"SW·IT 개발": {"신청": 9, "참여": 0, "수료": 0}, "UX/UI·디자인": {"신청": 20, "참여": 0, "수료": 0}, "경영지원·사무관리": {"신청": 10, "참여": 0, "수료": 0}, "공공행정·행정사무": {"신청": 8, "참여": 0, "수료": 0}, "교육·교육기획": {"신청": 7, "참여": 0, "수료": 0}, "글로벌 무역·해외영업": {"신청": 10, "참여": 0, "수료": 0}, "데이터 분석": {"신청": 10, "참여": 0, "수료": 0}, "디지털마케팅·콘텐츠기획": {"신청": 28, "참여": 0, "수료": 0}, "사회복지·통합돌봄": {"신청": 3, "참여": 0, "수료": 0}, "스마트제조·시스템관리": {"신청": 7, "참여": 0, "수료": 0}}}, {"school": "한신대학교", "courses": {"경영지원·사무관리": {"신청": 29, "참여": 0, "수료": 0}, "데이터 분석": {"신청": 32, "참여": 0, "수료": 0}, "디지털마케팅·콘텐츠기획": {"신청": 0, "참여": 0, "수료": 0}, "공공행정·행정사무": {"신청": 0, "참여": 0, "수료": 0}, "스마트제조·시스템관리": {"신청": 0, "참여": 0, "수료": 0}, "SW·IT 개발": {"신청": 0, "참여": 0, "수료": 0}, "글로벌 무역·해외영업": {"신청": 0, "참여": 0, "수료": 0}, "사회복지·통합돌봄": {"신청": 0, "참여": 0, "수료": 0}, "UX/UI·디자인": {"신청": 0, "참여": 0, "수료": 0}, "교육·교육기획": {"신청": 0, "참여": 0, "수료": 0}}}, {"school": "오산대학교", "courses": {"SW·IT 개발": {"신청": 6, "참여": 0, "수료": 0}, "UX/UI·디자인": {"신청": 5, "참여": 0, "수료": 0}, "경영지원·사무관리": {"신청": 8, "참여": 0, "수료": 0}, "공공행정·행정사무": {"신청": 6, "참여": 0, "수료": 0}, "교육·교육기획": {"신청": 4, "참여": 0, "수료": 0}, "글로벌 무역·해외영업": {"신청": 4, "참여": 0, "수료": 0}, "데이터 분석": {"신청": 9, "참여": 0, "수료": 0}, "디지털마케팅·콘텐츠기획": {"신청": 14, "참여": 0, "수료": 0}, "사회복지·통합돌봄": {"신청": 17, "참여": 0, "수료": 0}, "스마트제조·시스템관리": {"신청": 3, "참여": 0, "수료": 0}}}, {"school": "협성대학교", "courses": {"경영지원·사무관리": {"신청": 16, "참여": 0, "수료": 0}, "데이터 분석": {"신청": 15, "참여": 0, "수료": 0}, "디지털마케팅·콘텐츠기획": {"신청": 0, "참여": 0, "수료": 0}, "공공행정·행정사무": {"신청": 0, "참여": 0, "수료": 0}, "스마트제조·시스템관리": {"신청": 0, "참여": 0, "수료": 0}, "SW·IT 개발": {"신청": 0, "참여": 0, "수료": 0}, "글로벌 무역·해외영업": {"신청": 0, "참여": 0, "수료": 0}, "사회복지·통합돌봄": {"신청": 0, "참여": 0, "수료": 0}, "UX/UI·디자인": {"신청": 0, "참여": 0, "수료": 0}, "교육·교육기획": {"신청": 0, "참여": 0, "수료": 0}}}, {"school": "한경국립대학교", "courses": {"경영지원·사무관리": {"신청": 8, "참여": 0, "수료": 0}, "데이터 분석": {"신청": 17, "참여": 0, "수료": 0}, "디지털마케팅·콘텐츠기획": {"신청": 0, "참여": 0, "수료": 0}, "공공행정·행정사무": {"신청": 0, "참여": 0, "수료": 0}, "스마트제조·시스템관리": {"신청": 0, "참여": 0, "수료": 0}, "SW·IT 개발": {"신청": 0, "참여": 0, "수료": 0}, "글로벌 무역·해외영업": {"신청": 0, "참여": 0, "수료": 0}, "사회복지·통합돌봄": {"신청": 0, "참여": 0, "수료": 0}, "UX/UI·디자인": {"신청": 0, "참여": 0, "수료": 0}, "교육·교육기획": {"신청": 0, "참여": 0, "수료": 0}}}, {"school": "안양대학교", "courses": {"SW·IT 개발": {"신청": 4, "참여": 0, "수료": 0}, "UX/UI·디자인": {"신청": 6, "참여": 0, "수료": 0}, "경영지원·사무관리": {"신청": 11, "참여": 0, "수료": 0}, "공공행정·행정사무": {"신청": 11, "참여": 0, "수료": 0}, "교육·교육기획": {"신청": 7, "참여": 0, "수료": 0}, "글로벌 무역·해외영업": {"신청": 6, "참여": 0, "수료": 0}, "데이터 분석": {"신청": 5, "참여": 0, "수료": 0}, "디지털마케팅·콘텐츠기획": {"신청": 15, "참여": 0, "수료": 0}, "사회복지·통합돌봄": {"신청": 5, "참여": 0, "수료": 0}, "스마트제조·시스템관리": {"신청": 4, "참여": 0, "수료": 0}}}, {"school": "수원대학교", "courses": {"경영지원·사무관리": {"신청": 17, "참여": 0, "수료": 0}, "데이터 분석": {"신청": 20, "참여": 0, "수료": 0}, "디지털마케팅·콘텐츠기획": {"신청": 0, "참여": 0, "수료": 0}, "공공행정·행정사무": {"신청": 0, "참여": 0, "수료": 0}, "스마트제조·시스템관리": {"신청": 0, "참여": 0, "수료": 0}, "SW·IT 개발": {"신청": 0, "참여": 0, "수료": 0}, "글로벌 무역·해외영업": {"신청": 0, "참여": 0, "수료": 0}, "사회복지·통합돌봄": {"신청": 0, "참여": 0, "수료": 0}, "UX/UI·디자인": {"신청": 0, "참여": 0, "수료": 0}, "교육·교육기획": {"신청": 0, "참여": 0, "수료": 0}}}, {"school": "성결대학교", "courses": {"SW·IT 개발": {"신청": 29, "참여": 0, "수료": 0}, "UX/UI·디자인": {"신청": 33, "참여": 0, "수료": 0}, "경영지원·사무관리": {"신청": 34, "참여": 0, "수료": 0}, "공공행정·행정사무": {"신청": 24, "참여": 0, "수료": 0}, "교육·교육기획": {"신청": 20, "참여": 0, "수료": 0}, "글로벌 무역·해외영업": {"신청": 25, "참여": 0, "수료": 0}, "데이터 분석": {"신청": 49, "참여": 0, "수료": 0}, "디지털마케팅·콘텐츠기획": {"신청": 38, "참여": 0, "수료": 0}, "사회복지·통합돌봄": {"신청": 13, "참여": 0, "수료": 0}, "스마트제조·시스템관리": {"신청": 23, "참여": 0, "수료": 0}}}, {"school": "평택대학교", "courses": {"SW·IT 개발": {"신청": 8, "참여": 0, "수료": 0}, "UX/UI·디자인": {"신청": 8, "참여": 0, "수료": 0}, "경영지원·사무관리": {"신청": 16, "참여": 0, "수료": 0}, "공공행정·행정사무": {"신청": 8, "참여": 0, "수료": 0}, "교육·교육기획": {"신청": 7, "참여": 0, "수료": 0}, "글로벌 무역·해외영업": {"신청": 8, "참여": 0, "수료": 0}, "데이터 분석": {"신청": 18, "참여": 0, "수료": 0}, "디지털마케팅·콘텐츠기획": {"신청": 9, "참여": 0, "수료": 0}, "사회복지·통합돌봄": {"신청": 7, "참여": 0, "수료": 0}, "스마트제조·시스템관리": {"신청": 11, "참여": 0, "수료": 0}}}, {"school": "한국공학대학교", "courses": {"경영지원·사무관리": {"신청": 1, "참여": 0, "수료": 0}, "데이터 분석": {"신청": 1, "참여": 0, "수료": 0}, "디지털마케팅·콘텐츠기획": {"신청": 0, "참여": 0, "수료": 0}, "공공행정·행정사무": {"신청": 0, "참여": 0, "수료": 0}, "스마트제조·시스템관리": {"신청": 0, "참여": 0, "수료": 0}, "SW·IT 개발": {"신청": 0, "참여": 0, "수료": 0}, "글로벌 무역·해외영업": {"신청": 0, "참여": 0, "수료": 0}, "사회복지·통합돌봄": {"신청": 0, "참여": 0, "수료": 0}, "UX/UI·디자인": {"신청": 0, "참여": 0, "수료": 0}, "교육·교육기획": {"신청": 0, "참여": 0, "수료": 0}}}]}
+</script>
+
+<script>
+const DATA = JSON.parse(document.getElementById('dashboard-data').textContent);
+const fmt = n => n.toLocaleString('ko-KR');
+const rate = (num, den) => den > 0 ? Math.round((num/den)*1000)/10 : 0;
+
+function schoolTotals(s){
+  let 신청=0,참여=0,수료=0;
+  for(const c of DATA.courseOrder){ const v=s.courses[c]; 신청+=v.신청; 참여+=v.참여; 수료+=v.수료; }
+  return {신청,참여,수료};
+}
+function courseTotals(course){
+  let 신청=0,참여=0,수료=0;
+  for(const s of DATA.schools){ const v=s.courses[course]; 신청+=v.신청; 참여+=v.참여; 수료+=v.수료; }
+  return {신청,참여,수료};
+}
+
+function renderOverviewTiles(){
+  let 신청=0,참여=0,수료=0;
+  DATA.schools.forEach(s=>{ const t=schoolTotals(s); 신청+=t.신청; 참여+=t.참여; 수료+=t.수료; });
+  const tiles = [
+    ['참여 대학', DATA.schools.length, '개교'],
+    ['참여신청인원', fmt(신청), '명'],
+    ['프로그램 참여인원', fmt(참여), '명'],
+    ['수료인원', fmt(수료), '명'],
+    ['전체 수료율', rate(수료,신청)+'%', ''],
+  ];
+  document.getElementById('overviewTiles').innerHTML = tiles.map(([label,val,unit])=>
+    `<div class="tile"><span>${label}</span><strong>${val}${unit?` <small>${unit}</small>`:''}</strong></div>`
+  ).join('');
+}
+
+function barsHtml(v, max){
+  const pct = x => max>0 ? Math.max(x/max*100, x>0?3:0) : 0;
+  const stages = [['신청','--stage-1'],['참여','--stage-2'],['수료','--stage-3']];
+  return stages.map(([k,color])=>`
+    <div class="barline">
+      <div class="track"><div class="fill" style="width:${pct(v[k])}%;background:var(${color})"></div></div>
+      <div class="barval">${fmt(v[k])}</div>
+    </div>`).join('');
+}
+function barsRow(name, v, max){
+  return `<div class="row">
+    <div class="cname">${name}</div>
+    <div class="bars">${barsHtml(v, max)}</div>
+    <div class="rowmeta"><span>수료율</span><span class="rate">${rate(v.수료,v.신청)}%</span></div>
+  </div>`;
+}
+
+function renderSchoolContent(schoolName){
+  const container = document.getElementById('schoolContent');
+  if(schoolName === '__ALL__'){
+    const rows = DATA.schools.map(s=>schoolTotals(s));
+    const max = Math.max(...rows.map(r=>r.신청), 1);
+    let 신청=0,참여=0,수료=0; rows.forEach(r=>{신청+=r.신청;참여+=r.참여;수료+=r.수료;});
+    container.innerHTML = `<div class="card">
+      <h2>전체 대학 비교</h2>
+      <p class="cardsub">10개 참여 대학의 신청·참여·수료 인원 비교입니다.</p>
+      ${DATA.schools.map((s,i)=>barsRow(s.school, rows[i], max)).join('')}
+      <div class="row" style="margin-top:6px;border-top:2px solid var(--ink-1);padding-top:12px">
+        <div class="cname">합계</div>
+        <div class="bars">${barsHtml({신청,참여,수료}, Math.max(신청,1))}</div>
+        <div class="rowmeta"><span>수료율</span><span class="rate">${rate(수료,신청)}%</span></div>
+      </div>
+    </div>`;
+    return;
+  }
+  const s = DATA.schools.find(x=>x.school===schoolName);
+  const t = schoolTotals(s);
+  const max = Math.max(...DATA.courseOrder.map(c=>s.courses[c].신청), 1);
+  container.innerHTML = `
+    <section class="tiles" style="grid-template-columns:repeat(4,1fr)">
+      <div class="tile"><span>참여신청인원</span><strong>${fmt(t.신청)} <small>명</small></strong></div>
+      <div class="tile"><span>프로그램 참여인원</span><strong>${fmt(t.참여)} <small>명</small></strong></div>
+      <div class="tile"><span>수료인원</span><strong>${fmt(t.수료)} <small>명</small></strong></div>
+      <div class="tile"><span>수료율</span><strong>${rate(t.수료,t.신청)}%</strong></div>
+    </section>
+    <div class="card">
+      <h2>${schoolName} · 과정별 현황</h2>
+      <p class="cardsub">10개 산업특강 과정별 신청·참여·수료 인원입니다.</p>
+      ${DATA.courseOrder.map(c=>barsRow(c, s.courses[c], max)).join('')}
+    </div>
+    <div class="card">
+      <h2>${schoolName} · 과정별 표</h2>
+      <div class="tablewrap"><table>
+        <thead><tr><th>과정명</th><th class="num">참여신청인원</th><th class="num">프로그램 참여인원</th><th class="num">수료인원</th><th class="num">수료율</th></tr></thead>
+        <tbody>
+          ${DATA.courseOrder.map(c=>{const v=s.courses[c]; return `<tr><td>${c}</td><td class="num">${fmt(v.신청)}</td><td class="num">${fmt(v.참여)}</td><td class="num">${fmt(v.수료)}</td><td class="num">${rate(v.수료,v.신청)}%</td></tr>`;}).join('')}
+          <tr class="total"><td>합계</td><td class="num">${fmt(t.신청)}</td><td class="num">${fmt(t.참여)}</td><td class="num">${fmt(t.수료)}</td><td class="num">${rate(t.수료,t.신청)}%</td></tr>
+        </tbody>
+      </table></div>
+    </div>`;
+}
+
+function renderCourseRows(){
+  const totals = DATA.courseOrder.map(c=>({course:c, ...courseTotals(c)}));
+  totals.sort((a,b)=>b.신청-a.신청);
+  const max = Math.max(...totals.map(t=>t.신청), 1);
+  let 신청=0,참여=0,수료=0; totals.forEach(t=>{신청+=t.신청;참여+=t.참여;수료+=t.수료;});
+  document.getElementById('courseRows').innerHTML =
+    totals.map(t=>barsRow(t.course, t, max)).join('') +
+    `<div class="row" style="border-top:2px solid var(--ink-1);padding-top:12px;margin-top:4px">
+       <div class="cname">합계</div>
+       <div class="bars">${barsHtml({신청,참여,수료}, Math.max(신청,1))}</div>
+       <div class="rowmeta"><span>수료율</span><span class="rate">${rate(수료,신청)}%</span></div>
+     </div>`;
+}
+
+function initTabs(){
+  document.querySelectorAll('.tabs button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+    });
+  });
+}
+
+function initSchoolSelect(){
+  const sel = document.getElementById('schoolSelect');
+  sel.innerHTML = `<option value="__ALL__">전체 대학 비교</option>` +
+    DATA.schools.map(s=>`<option value="${s.school}">${s.school}</option>`).join('');
+  sel.addEventListener('change', ()=>renderSchoolContent(sel.value));
+  renderSchoolContent('__ALL__');
+}
+
+renderOverviewTiles();
+initTabs();
+initSchoolSelect();
+renderCourseRows();
+</script>
+</body>
+</html>
